@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar, MapPin, Users, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -6,7 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 interface TravelPlanFormData {
   source: string;
   destination: string;
-  dates: string;
+  startDate: string;
+  endDate: string;
   budget: string;
   travelers: string;
   interests: string;
@@ -17,7 +17,8 @@ const TravelPlanForm = () => {
   const [formData, setFormData] = useState<TravelPlanFormData>({
     source: "",
     destination: "",
-    dates: "",
+    startDate: "",
+    endDate: "",
     budget: "",
     travelers: "",
     interests: "",
@@ -39,11 +40,11 @@ const TravelPlanForm = () => {
 
       setResult(
         `Here's your travel plan from ${formData.source} to ${formData.destination}:\n\n` +
-        `• Recommended duration: 5 days\n` +
+        `• Travel Period: ${formData.startDate} to ${formData.endDate}\n` +
         `• Budget allocation: ${formData.budget}\n` +
         `• Activities based on interests: ${formData.interests}\n` +
         `• Number of travelers: ${formData.travelers}\n\n` +
-        `We recommend visiting during ${formData.dates} for the best experience.`
+        `We recommend these dates for the best experience.`
       );
     } catch (error) {
       toast({
@@ -107,17 +108,33 @@ const TravelPlanForm = () => {
             </div>
 
             <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">Travel Dates</label>
+              <label className="text-sm font-semibold text-navy/80">Start Date</label>
               <div className="relative group">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
                 <input
-                  type="text"
-                  name="dates"
-                  value={formData.dates}
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  placeholder="When do you plan to travel?"
                   required
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-navy/80">End Date</label>
+              <div className="relative group">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
+                  required
+                  min={formData.startDate || new Date().toISOString().split('T')[0]}
                 />
               </div>
             </div>
