@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Calendar, MapPin, Users, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +12,8 @@ interface TravelPlanFormData {
   travelers: string;
   interests: string;
 }
+
+const API_KEY = 'AIzaSyDG1Ab4bOk2CdxHMCwWTyyLJudtqwYMXfA';
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -26,6 +29,18 @@ const TravelPlanForm = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string>("");
 
+  const generatePrompt = (data: TravelPlanFormData) => {
+    return `Create a detailed travel plan for a trip:
+    From: ${data.source}
+    To: ${data.destination}
+    Dates: ${data.startDate} to ${data.endDate}
+    Budget: ${data.budget}
+    Number of travelers: ${data.travelers}
+    Interests: ${data.interests}
+    
+    Please include recommendations for activities, accommodations, and transportation based on the budget and interests.`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -36,22 +51,34 @@ const TravelPlanForm = () => {
         description: "Your travel plan is being generated...",
       });
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: generatePrompt(formData)
+            }]
+          }]
+        })
+      });
 
-      setResult(
-        `Here's your travel plan from ${formData.source} to ${formData.destination}:\n\n` +
-        `• Travel Period: ${formData.startDate} to ${formData.endDate}\n` +
-        `• Budget allocation: ${formData.budget}\n` +
-        `• Activities based on interests: ${formData.interests}\n` +
-        `• Number of travelers: ${formData.travelers}\n\n` +
-        `We recommend these dates for the best experience.`
-      );
+      const data = await response.json();
+      
+      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+        setResult(data.candidates[0].content.parts[0].text);
+      } else {
+        throw new Error('Failed to generate travel plan');
+      }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to generate travel plan. Please try again.",
         variant: "destructive",
       });
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
