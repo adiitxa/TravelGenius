@@ -18,7 +18,7 @@ const Navbar = () => {
             <div className="ml-10 flex items-center space-x-8">
               <a href="#" className="text-navy hover:text-desert transition-colors">Home</a>
               <a href="#features" className="text-navy hover:text-desert transition-colors">Features</a>
-              <a href="#how-it-works" className="text-navy hover:text-desert transition-colors">How it Works</a>
+              <a href="#plan-trip" className="text-navy hover:text-desert transition-colors">Plan Your Trip</a>
               <a href="#contact" className="text-navy hover:text-desert transition-colors">Contact</a>
               <button className="bg-navy text-white px-6 py-2 rounded-full hover:bg-desert transition-colors">
                 Get Started
@@ -43,7 +43,7 @@ const Navbar = () => {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               <a href="#" className="block px-3 py-2 text-navy hover:text-desert transition-colors">Home</a>
               <a href="#features" className="block px-3 py-2 text-navy hover:text-desert transition-colors">Features</a>
-              <a href="#how-it-works" className="block px-3 py-2 text-navy hover:text-desert transition-colors">How it Works</a>
+              <a href="#plan-trip" className="block px-3 py-2 text-navy hover:text-desert transition-colors">Plan Your Trip</a>
               <a href="#contact" className="block px-3 py-2 text-navy hover:text-desert transition-colors">Contact</a>
               <button className="w-full mt-2 bg-navy text-white px-6 py-2 rounded-full hover:bg-desert transition-colors">
                 Get Started

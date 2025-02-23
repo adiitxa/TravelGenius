@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar, MapPin, Users, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -30,15 +29,33 @@ const TravelPlanForm = () => {
   const [result, setResult] = useState<string>("");
 
   const generatePrompt = (data: TravelPlanFormData) => {
-    return `Create a detailed travel plan for a trip:
-    From: ${data.source}
-    To: ${data.destination}
-    Dates: ${data.startDate} to ${data.endDate}
-    Budget: ${data.budget}
-    Number of travelers: ${data.travelers}
-    Interests: ${data.interests}
-    
-    Please include recommendations for activities, accommodations, and transportation based on the budget and interests.`;
+    return `Create a detailed travel plan for a trip. Format your response using the following structure and add relevant emojis (sparingly):
+
+# 🌟 Travel Plan Overview
+
+## 📍 Route
+- From: ${data.source}
+- To: ${data.destination}
+- Dates: ${data.startDate} to ${data.endDate}
+
+## 💰 Budget Details
+${data.budget}
+
+## 👥 Group Size
+${data.travelers} traveler(s)
+
+## ✨ Interests
+${data.interests}
+
+Please provide a detailed itinerary including:
+
+1. 🏨 Recommended Accommodations
+2. 🚗 Transportation Options
+3. 📅 Day-by-Day Activities
+4. 🍽️ Notable Restaurant Recommendations
+5. 💡 Travel Tips & Cultural Insights
+
+Format the response with clear sections, bullet points, and make it easy to read.`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
