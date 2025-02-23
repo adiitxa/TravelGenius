@@ -1,6 +1,14 @@
 import { useState } from "react";
-import { Calendar, MapPin, Users, CreditCard } from "lucide-react";
+import { Calendar, MapPin, Users, CreditCard, Plane } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface TravelPlanFormData {
   source: string;
@@ -12,7 +20,17 @@ interface TravelPlanFormData {
   interests: string;
 }
 
+interface FlightResult {
+  airline: string;
+  price: string;
+  duration: string;
+  departure_time: string;
+  arrival_time: string;
+  booking_link: string;
+}
+
 const API_KEY = 'AIzaSyDG1Ab4bOk2CdxHMCwWTyyLJudtqwYMXfA';
+const SERP_API_KEY = '2ccc800f765f678fb19986dd95aa63c8de58f264a25707a79b9f4e54b96096bb';
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -27,6 +45,35 @@ const TravelPlanForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string>("");
+  const [flights, setFlights] = useState<FlightResult[]>([]);
+
+  const fetchFlights = async (source: string, destination: string, date: string) => {
+    try {
+      const response = await fetch(
+        `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${source}&arrival_id=${destination}&outbound_date=${date}&currency=USD&hl=en&api_key=${SERP_API_KEY}`
+      );
+      const data = await response.json();
+      
+      if (data.flights) {
+        const formattedFlights = data.flights.map((flight: any) => ({
+          airline: flight.airline,
+          price: flight.price,
+          duration: flight.duration,
+          departure_time: flight.departure.time,
+          arrival_time: flight.arrival.time,
+          booking_link: flight.booking_link
+        }));
+        setFlights(formattedFlights);
+      }
+    } catch (error) {
+      console.error('Error fetching flights:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch flight information",
+        variant: "destructive",
+      });
+    }
+  };
 
   const generatePrompt = (data: TravelPlanFormData) => {
     return `Create a detailed travel plan for a trip. Format your response using the following structure and add relevant emojis (sparingly):
@@ -65,9 +112,13 @@ Format the response with clear sections, bullet points, and make it easy to read
     try {
       toast({
         title: "Planning Trip",
-        description: "Your travel plan is being generated...",
+        description: "Fetching flights and generating travel plan...",
       });
 
+      // Fetch flights first
+      await fetchFlights(formData.source, formData.destination, formData.startDate);
+
+      // Then generate AI travel plan
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: {
@@ -248,6 +299,48 @@ Format the response with clear sections, bullet points, and make it easy to read
             )}
           </button>
         </form>
+
+        {flights.length > 0 && (
+          <div className="mt-10">
+            <h3 className="text-2xl font-bold text-navy mb-4">✈️ Available Flights</h3>
+            <div className="rounded-xl overflow-hidden border border-gray-200">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Airline</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Departure</TableHead>
+                    <TableHead>Arrival</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {flights.map((flight, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{flight.airline}</TableCell>
+                      <TableCell>{flight.price}</TableCell>
+                      <TableCell>{flight.duration}</TableCell>
+                      <TableCell>{flight.departure_time}</TableCell>
+                      <TableCell>{flight.arrival_time}</TableCell>
+                      <TableCell>
+                        <a
+                          href={flight.booking_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center space-x-2 text-desert hover:text-navy transition-colors"
+                        >
+                          <span>Book</span>
+                          <Plane size={16} />
+                        </a>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
 
         {result && (
           <div className="mt-10 p-8 bg-gradient-to-br from-sand/40 to-desert/20 rounded-2xl backdrop-blur-sm animate-fadeIn">
