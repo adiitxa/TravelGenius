@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TravelPlanFormData, FlightDetails } from "@/types/travel";
 import { API_KEY, constructFlightSearchUrl, generatePrompt } from "@/utils/travelUtils";
 import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
+import { TravelChat } from "./TravelChat";
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -197,12 +199,16 @@ const TravelPlanForm = () => {
         )}
 
         {result && (
-          <div className="mt-10 p-8 bg-gradient-to-br from-sand/40 to-desert/20 rounded-2xl backdrop-blur-sm animate-fadeIn">
-            <h3 className="text-2xl font-bold text-navy mb-4">Your Travel Plan</h3>
-            <div className="prose prose-sand">
-              <pre className="whitespace-pre-wrap text-navy/70 leading-relaxed">{result}</pre>
+          <>
+            <div className="mt-10 p-8 bg-gradient-to-br from-sand/40 to-desert/20 rounded-2xl backdrop-blur-sm animate-fadeIn">
+              <h3 className="text-2xl font-bold text-navy mb-4">Your Travel Plan</h3>
+              <div className="prose prose-sand">
+                <pre className="whitespace-pre-wrap text-navy/70 leading-relaxed">{result}</pre>
+              </div>
             </div>
-          </div>
+            
+            <TravelChat initialContext={result} />
+          </>
         )}
       </div>
     </div>
