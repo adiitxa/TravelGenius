@@ -72,11 +72,24 @@ const TravelPlanForm = () => {
       });
     } catch (error) {
       console.error('Error fetching flights:', error);
+      
+      // More specific error handling
+      let errorMessage = "Failed to fetch flight information. Please try again.";
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          errorMessage = "Unable to connect to flight service. Please check your internet connection and try again.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to fetch flight information. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+      
+      setFlightDetails(null);
     }
   };
 
