@@ -1,6 +1,6 @@
 
 import { FlightDetails } from "@/types/travel";
-import { AlertCircle, Plane } from "lucide-react";
+import { Plane } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { mockFlightData } from "../mocks/flightData";
 
 interface FlightDetailsTableProps {
   flightDetails: FlightDetails;
@@ -57,7 +56,6 @@ export const FlightDetailsTable = ({ flightDetails }: FlightDetailsTableProps) =
               <TableCell>${flightDetails.price}</TableCell>
               <TableCell>
                 <button
-                  onClick={() => window.open(mockFlightData.best_flights[0].booking_token, '_blank')}
                   className="inline-flex items-center space-x-1 text-desert hover:text-navy transition-colors"
                 >
                   <span>Book</span>
@@ -74,10 +72,7 @@ export const FlightDetailsTable = ({ flightDetails }: FlightDetailsTableProps) =
           <p className="text-sm font-medium text-gray-600 mb-2">Additional Information</p>
           <ul className="space-y-1">
             {flightDetails.extensions.map((ext, index) => (
-              <li key={index} className="text-sm flex items-center space-x-2">
-                <AlertCircle size={14} className="text-desert" />
-                <span>{ext}</span>
-              </li>
+              <li key={index} className="text-sm text-gray-600">{ext}</li>
             ))}
           </ul>
         </div>
