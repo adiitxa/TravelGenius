@@ -42,7 +42,8 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
   // Ensure the date is properly formatted (YYYY-MM-DD)
   const formattedDate = formData.startDate.split('T')[0];
   
-  const params = new URLSearchParams({
+  // Use the proxy URL
+  return `https://api.serphouse.com/serp/live?` + new URLSearchParams({
     engine: 'google_flights',
     type: '2',
     departure_id: source,
@@ -51,7 +52,5 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
     currency: 'USD',
     hl: 'en',
     api_key: SERP_API_KEY,
-  });
-  
-  return `https://serpapi.com/search.json?${params.toString()}`;
+  }).toString();
 };
