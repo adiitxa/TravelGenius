@@ -42,7 +42,7 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
   // Ensure the date is properly formatted (YYYY-MM-DD)
   const formattedDate = formData.startDate.split('T')[0];
   
-  return `https://serpapi.com/search.json?` + new URLSearchParams({
+  const serpApiUrl = `https://serpapi.com/search.json?` + new URLSearchParams({
     engine: 'google_flights',
     type: '2',
     departure_id: source,
@@ -52,4 +52,7 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
     hl: 'en',
     api_key: SERP_API_KEY,
   }).toString();
+  
+  // Use a CORS proxy
+  return `https://corsproxy.io/?${encodeURIComponent(serpApiUrl)}`;
 };
