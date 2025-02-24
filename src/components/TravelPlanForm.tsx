@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TravelPlanFormData, FlightDetails } from "@/types/travel";
-import { API_KEY, SERP_API_KEY, generatePrompt } from "@/utils/travelUtils";
+import { API_KEY, constructFlightSearchUrl, generatePrompt } from "@/utils/travelUtils";
 import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
 
@@ -24,9 +24,7 @@ const TravelPlanForm = () => {
 
   const fetchFlightDetails = async () => {
     try {
-      const response = await fetch(
-        `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${formData.source}&arrival_id=${formData.destination}&outbound_date=${formData.startDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`
-      );
+      const response = await fetch(constructFlightSearchUrl(formData));
       
       if (!response.ok) {
         throw new Error('Failed to fetch flight data');
@@ -59,6 +57,11 @@ const TravelPlanForm = () => {
           price: bestFlight.price,
           travel_class: flight.travel_class,
           extensions: flight.extensions || [],
+        });
+
+        toast({
+          title: "Flights Found",
+          description: "Found available flights for your journey!",
         });
       } else {
         toast({
