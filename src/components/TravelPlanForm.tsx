@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TravelPlanFormData, FlightDetails } from "@/types/travel";
@@ -6,6 +7,8 @@ import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
 import { TravelChat } from "./TravelChat";
 import { Separator } from "@/components/ui/separator";
+import { SignInButton, useUser } from "@clerk/clerk-react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -16,6 +19,7 @@ import {
 } from "@/components/ui/table";
 
 const TravelPlanForm = () => {
+  const { isSignedIn } = useUser();
   const { toast } = useToast();
   const [formData, setFormData] = useState<TravelPlanFormData>({
     source: "",
@@ -162,6 +166,24 @@ const TravelPlanForm = () => {
       [name]: value
     }));
   };
+
+  if (!isSignedIn) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl p-6 md:p-10 border border-white/20">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold text-navy">Plan Your Perfect Trip</h2>
+            <p className="text-navy/70">Please sign in to access our AI travel planner</p>
+            <SignInButton mode="modal">
+              <Button size="lg" className="mt-4">
+                Sign in to Continue
+              </Button>
+            </SignInButton>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
