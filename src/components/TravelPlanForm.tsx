@@ -20,7 +20,7 @@ const TravelPlanForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string>("");
-  const [flightDetails, setFlightDetails] = useState<FlightDetails | null>(null);
+  const [flightDetails, setFlightDetails] = useState<FlightDetails[]>([]);
 
   const fetchFlightDetails = async () => {
     try {
@@ -31,10 +31,17 @@ const TravelPlanForm = () => {
       const url = constructFlightSearchUrl(formData);
       console.log('Fetching flights from:', url);
 
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
       console.log('SerpAPI Response:', data);
 
@@ -46,32 +53,33 @@ const TravelPlanForm = () => {
         throw new Error('No flights found for the specified route and dates');
       }
 
-      const bestFlight = data.best_flights[0];
-      const flight = bestFlight.flights[0];
+      // Transform all best flights into FlightDetails array
+      const flightDetailsArray = data.best_flights.map((bestFlight: any) => {
+        const flight = bestFlight.flights[0]; // Get the first flight segment
+        return {
+          airline: flight.airline,
+          airline_logo: flight.airline_logo,
+          flight_number: flight.flight_number,
+          departure: {
+            airport: flight.departure_airport.name,
+            time: flight.departure_airport.time,
+          },
+          arrival: {
+            airport: flight.arrival_airport.name,
+            time: flight.arrival_airport.time,
+          },
+          duration: flight.duration,
+          price: bestFlight.price,
+          travel_class: flight.travel_class,
+          extensions: flight.extensions || [],
+        };
+      });
 
-      const flightDetail: FlightDetails = {
-        airline: flight.airline,
-        airline_logo: flight.airline_logo,
-        flight_number: flight.flight_number,
-        departure: {
-          airport: flight.departure_airport.name,
-          time: flight.departure_airport.time,
-        },
-        arrival: {
-          airport: flight.arrival_airport.name,
-          time: flight.arrival_airport.time,
-        },
-        duration: flight.duration,
-        price: bestFlight.price,
-        travel_class: flight.travel_class,
-        extensions: flight.extensions,
-      };
-
-      setFlightDetails(flightDetail);
+      setFlightDetails(flightDetailsArray);
 
       toast({
         title: "Flights Found",
-        description: "Found available flights for your journey!",
+        description: `Found ${flightDetailsArray.length} flights for your journey!`,
       });
     } catch (error) {
       console.error('Error fetching flights:', error);
@@ -87,14 +95,14 @@ const TravelPlanForm = () => {
         variant: "destructive",
       });
       
-      setFlightDetails(null);
+      setFlightDetails([]);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setFlightDetails(null);
+    setFlightDetails([]);
 
     try {
       toast({
@@ -181,7 +189,14 @@ const TravelPlanForm = () => {
           </button>
         </form>
 
-        {flightDetails && <FlightDetailsTable flightDetails={flightDetails} />}
+        {flightDetails.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-2xl font-bold text-navy mb-4">Available Flights</h3>
+            {flightDetails.map((flight, index) => (
+              <FlightDetailsTable key={index} flightDetails={flight} />
+            ))}
+          </div>
+        )}
 
         {result && (
           <div className="mt-10 p-8 bg-gradient-to-br from-sand/40 to-desert/20 rounded-2xl backdrop-blur-sm animate-fadeIn">
