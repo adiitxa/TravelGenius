@@ -60,28 +60,48 @@ const TravelPlanForm = () => {
   const [result, setResult] = useState<string>("");
   const [flightDetails, setFlightDetails] = useState<FlightDetails | null>(null);
 
-  const fetchFlightDetails = () => {
-    // Using mock data for now
-    const bestFlight = mockFlightData.best_flights[0];
-    const flight = bestFlight.flights[0];
-    
-    setFlightDetails({
-      airline: flight.airline,
-      airline_logo: flight.airline_logo,
-      flight_number: flight.flight_number,
-      departure: {
-        airport: flight.departure_airport.name,
-        time: flight.departure_airport.time,
-      },
-      arrival: {
-        airport: flight.arrival_airport.name,
-        time: flight.arrival_airport.time,
-      },
-      duration: flight.duration,
-      price: bestFlight.price,
-      travel_class: flight.travel_class,
-      extensions: flight.extensions,
-    });
+  const fetchFlightDetails = async () => {
+    try {
+      // For now, use mock data
+      const bestFlight = mockFlightData.best_flights[0];
+      const flight = bestFlight.flights[0];
+      
+      setFlightDetails({
+        airline: flight.airline,
+        airline_logo: flight.airline_logo,
+        flight_number: flight.flight_number,
+        departure: {
+          airport: flight.departure_airport.name,
+          time: flight.departure_airport.time,
+        },
+        arrival: {
+          airport: flight.arrival_airport.name,
+          time: flight.arrival_airport.time,
+        },
+        duration: flight.duration,
+        price: bestFlight.price,
+        travel_class: flight.travel_class,
+        extensions: flight.extensions,
+      });
+
+      // SerpAPI integration (commented out for now, using mock data)
+      /*
+      const response = await fetch(
+        `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${formData.source}&arrival_id=${formData.destination}&outbound_date=${formData.startDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`
+      );
+      const data = await response.json();
+      if (data.flights) {
+        // Process real flight data here
+      }
+      */
+    } catch (error) {
+      console.error('Error fetching flights:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch flight information",
+        variant: "destructive",
+      });
+    }
   };
 
   const generatePrompt = (data: TravelPlanFormData) => {
@@ -328,60 +348,70 @@ Format the response with clear sections, bullet points, and make it easy to read
 
         {flightDetails && (
           <div className="mt-10">
-            <h3 className="text-2xl font-bold text-navy mb-4">✈️ Available Flight</h3>
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <div className="flex items-center space-x-4 mb-4">
-                <img src={flightDetails.airline_logo} alt={flightDetails.airline} className="h-8" />
-                <div>
-                  <h4 className="font-semibold">{flightDetails.airline}</h4>
-                  <p className="text-sm text-gray-600">{flightDetails.flight_number}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm text-gray-600">Departure</p>
-                  <p className="font-medium">{flightDetails.departure.airport}</p>
-                  <p className="text-sm">{flightDetails.departure.time}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Arrival</p>
-                  <p className="font-medium">{flightDetails.arrival.airport}</p>
-                  <p className="text-sm">{flightDetails.arrival.time}</p>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Duration</p>
-                    <p className="font-medium">{Math.floor(flightDetails.duration / 60)}h {flightDetails.duration % 60}m</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Class</p>
-                    <p className="font-medium">{flightDetails.travel_class}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Price</p>
-                    <p className="font-medium">${flightDetails.price}</p>
-                  </div>
-                </div>
-              </div>
-
-              {flightDetails.extensions.length > 0 && (
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600 mb-2">Additional Information</p>
-                  <ul className="space-y-1">
-                    {flightDetails.extensions.map((ext, index) => (
-                      <li key={index} className="text-sm flex items-center space-x-2">
-                        <AlertCircle size={14} className="text-desert" />
-                        <span>{ext}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            <h3 className="text-2xl font-bold text-navy mb-4">✈️ Available Flights</h3>
+            <div className="overflow-hidden rounded-xl border border-gray-200">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Airline</TableHead>
+                    <TableHead>Flight</TableHead>
+                    <TableHead>Departure</TableHead>
+                    <TableHead>Arrival</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <img src={flightDetails.airline_logo} alt={flightDetails.airline} className="h-6" />
+                        <span>{flightDetails.airline}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{flightDetails.flight_number}</TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{flightDetails.departure.time.split(' ')[1]}</p>
+                        <p className="text-sm text-gray-500">{flightDetails.departure.airport}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{flightDetails.arrival.time.split(' ')[1]}</p>
+                        <p className="text-sm text-gray-500">{flightDetails.arrival.airport}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{Math.floor(flightDetails.duration / 60)}h {flightDetails.duration % 60}m</TableCell>
+                    <TableCell>${flightDetails.price}</TableCell>
+                    <TableCell>
+                      <button
+                        onClick={() => window.open(mockFlightData.best_flights[0].booking_token, '_blank')}
+                        className="inline-flex items-center space-x-1 text-desert hover:text-navy transition-colors"
+                      >
+                        <span>Book</span>
+                        <Plane size={16} />
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
+
+            {flightDetails.extensions.length > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+                <p className="text-sm font-medium text-gray-600 mb-2">Additional Information</p>
+                <ul className="space-y-1">
+                  {flightDetails.extensions.map((ext, index) => (
+                    <li key={index} className="text-sm flex items-center space-x-2">
+                      <AlertCircle size={14} className="text-desert" />
+                      <span>{ext}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
