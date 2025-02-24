@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TravelPlanFormData, FlightDetails } from "@/types/travel";
@@ -31,20 +30,17 @@ const TravelPlanForm = () => {
       const url = constructFlightSearchUrl(formData);
       console.log('Fetching flights from:', url);
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
+      const response = await fetch(url);
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error response:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const rawData = await response.json();
+      // Parse the contents from the CORS proxy response
+      const data = JSON.parse(rawData.contents);
       console.log('SerpAPI Response:', data);
 
       if (data.error) {

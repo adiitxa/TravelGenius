@@ -54,6 +54,6 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
     api_key: SERP_API_KEY,
   }).toString();
   
-  // Use a CORS proxy
-  return `https://corsproxy.io/?${encodeURIComponent(serpApiUrl)}`;
+  // Use a different CORS proxy
+  return `https://api.allorigins.win/get?url=${encodeURIComponent(serpApiUrl)}`;
 };
