@@ -62,43 +62,54 @@ const TravelPlanForm = () => {
 
   const fetchFlightDetails = async () => {
     try {
-      // For now, use mock data
-      const bestFlight = mockFlightData.best_flights[0];
-      const flight = bestFlight.flights[0];
-      
-      setFlightDetails({
-        airline: flight.airline,
-        airline_logo: flight.airline_logo,
-        flight_number: flight.flight_number,
-        departure: {
-          airport: flight.departure_airport.name,
-          time: flight.departure_airport.time,
-        },
-        arrival: {
-          airport: flight.arrival_airport.name,
-          time: flight.arrival_airport.time,
-        },
-        duration: flight.duration,
-        price: bestFlight.price,
-        travel_class: flight.travel_class,
-        extensions: flight.extensions,
-      });
-
-      // SerpAPI integration (commented out for now, using mock data)
-      /*
       const response = await fetch(
         `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${formData.source}&arrival_id=${formData.destination}&outbound_date=${formData.startDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`
       );
-      const data = await response.json();
-      if (data.flights) {
-        // Process real flight data here
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch flight data');
       }
-      */
+
+      const data = await response.json();
+      console.log('SerpAPI Response:', data); // For debugging
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.best_flights && data.best_flights.length > 0) {
+        const bestFlight = data.best_flights[0];
+        const flight = bestFlight.flights[0];
+
+        setFlightDetails({
+          airline: flight.airline,
+          airline_logo: flight.airline_logo || "https://www.gstatic.com/flights/airline_logos/70px/generic.png",
+          flight_number: flight.flight_number,
+          departure: {
+            airport: flight.departure_airport.name,
+            time: flight.departure_airport.time,
+          },
+          arrival: {
+            airport: flight.arrival_airport.name,
+            time: flight.arrival_airport.time,
+          },
+          duration: flight.duration,
+          price: bestFlight.price,
+          travel_class: flight.travel_class,
+          extensions: flight.extensions || [],
+        });
+      } else {
+        toast({
+          title: "No Flights Found",
+          description: "No available flights found for your search criteria.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error fetching flights:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch flight information",
+        description: "Failed to fetch flight information. Please try again.",
         variant: "destructive",
       });
     }
