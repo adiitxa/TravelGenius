@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/clerk-react";
+import { Menu, X, UserCircle } from "lucide-react";
+import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
@@ -25,16 +25,21 @@ const Navbar = () => {
               <a href="#contact" className="text-navy hover:text-desert transition-colors">Contact</a>
               
               {isSignedIn ? (
-                <UserButton afterSignOutUrl="/" />
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10 rounded-full"
+                    }
+                  }}
+                />
               ) : (
-                <div className="flex items-center gap-4">
-                  <SignInButton mode="modal">
-                    <Button variant="ghost">Sign In</Button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <Button>Sign Up</Button>
-                  </SignUpButton>
-                </div>
+                <SignInButton mode="modal">
+                  <Button variant="ghost" className="gap-2">
+                    <UserCircle className="w-5 h-5" />
+                    Sign in
+                  </Button>
+                </SignInButton>
               )}
             </div>
           </div>
@@ -61,16 +66,23 @@ const Navbar = () => {
               
               {isSignedIn ? (
                 <div className="px-3 py-2">
-                  <UserButton afterSignOutUrl="/" />
+                  <UserButton 
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-10 h-10 rounded-full"
+                      }
+                    }}
+                  />
                 </div>
               ) : (
-                <div className="flex flex-col gap-2 px-3 py-2">
+                <div className="px-3 py-2">
                   <SignInButton mode="modal">
-                    <Button variant="ghost" className="w-full">Sign In</Button>
+                    <Button variant="ghost" className="w-full gap-2">
+                      <UserCircle className="w-5 h-5" />
+                      Sign in
+                    </Button>
                   </SignInButton>
-                  <SignUpButton mode="modal">
-                    <Button className="w-full">Sign Up</Button>
-                  </SignUpButton>
                 </div>
               )}
             </div>
