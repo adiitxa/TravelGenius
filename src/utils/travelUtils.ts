@@ -42,7 +42,7 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
   // Ensure the date is properly formatted (YYYY-MM-DD)
   const formattedDate = formData.startDate.split('T')[0];
   
-  // Use the proxy URL
+  // Use the proxy URL and include the API key in the Authorization header
   return `https://api.serphouse.com/serp/live?` + new URLSearchParams({
     engine: 'google_flights',
     type: '2',

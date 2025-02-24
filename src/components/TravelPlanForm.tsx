@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TravelPlanFormData, FlightDetails } from "@/types/travel";
-import { API_KEY, constructFlightSearchUrl, generatePrompt } from "@/utils/travelUtils";
+import { API_KEY, constructFlightSearchUrl, generatePrompt, SERP_API_KEY } from "@/utils/travelUtils";
 import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
 
@@ -34,6 +35,7 @@ const TravelPlanForm = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SERP_API_KEY}`
         },
       });
 
