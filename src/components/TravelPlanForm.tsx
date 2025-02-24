@@ -24,57 +24,57 @@ const TravelPlanForm = () => {
 
   const fetchFlightDetails = async () => {
     try {
-      const response = await fetch(constructFlightSearchUrl(formData));
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch flight data');
+      // Validate inputs before making the API call
+      if (!formData.source || !formData.destination || !formData.startDate || !formData.endDate) {
+        throw new Error('Please fill in all flight search fields');
       }
 
+      const url = constructFlightSearchUrl(formData);
+      console.log('Fetching flights from:', url);
+
+      const response = await fetch(url);
       const data = await response.json();
+      
       console.log('SerpAPI Response:', data);
 
       if (data.error) {
         throw new Error(data.error);
       }
 
-      if (data.best_flights && data.best_flights.length > 0) {
-        const bestFlight = data.best_flights[0];
-        const flight = bestFlight.flights[0];
-
-        setFlightDetails({
-          airline: flight.airline,
-          airline_logo: flight.airline_logo || "https://www.gstatic.com/flights/airline_logos/70px/generic.png",
-          flight_number: flight.flight_number,
-          departure: {
-            airport: flight.departure_airport.name,
-            time: flight.departure_airport.time,
-          },
-          arrival: {
-            airport: flight.arrival_airport.name,
-            time: flight.arrival_airport.time,
-          },
-          duration: flight.duration,
-          price: bestFlight.price,
-          travel_class: flight.travel_class,
-          extensions: flight.extensions || [],
-        });
-
-        toast({
-          title: "Flights Found",
-          description: "Found available flights for your journey!",
-        });
-      } else {
-        toast({
-          title: "No Flights Found",
-          description: "No available flights found for your search criteria.",
-          variant: "destructive",
-        });
+      if (!data.best_flights || data.best_flights.length === 0) {
+        throw new Error('No flights found for the specified route and dates');
       }
+
+      const bestFlight = data.best_flights[0];
+      const flight = bestFlight.flights[0];
+
+      setFlightDetails({
+        airline: flight.airline,
+        airline_logo: flight.airline_logo || "https://www.gstatic.com/flights/airline_logos/70px/generic.png",
+        flight_number: flight.flight_number,
+        departure: {
+          airport: flight.departure_airport.name,
+          time: flight.departure_airport.time,
+        },
+        arrival: {
+          airport: flight.arrival_airport.name,
+          time: flight.arrival_airport.time,
+        },
+        duration: flight.duration,
+        price: bestFlight.price,
+        travel_class: flight.travel_class,
+        extensions: flight.extensions || [],
+      });
+
+      toast({
+        title: "Flights Found",
+        description: "Found available flights for your journey!",
+      });
     } catch (error) {
       console.error('Error fetching flights:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch flight information. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to fetch flight information. Please try again.",
         variant: "destructive",
       });
     }
@@ -92,7 +92,7 @@ const TravelPlanForm = () => {
       });
 
       if (formData.includeFlights) {
-        fetchFlightDetails();
+        await fetchFlightDetails();
       }
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
@@ -119,7 +119,7 @@ const TravelPlanForm = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate travel plan. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate travel plan. Please try again.",
         variant: "destructive",
       });
       console.error('Error:', error);

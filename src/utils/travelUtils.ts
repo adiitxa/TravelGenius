@@ -35,5 +35,9 @@ Format the response with clear sections, bullet points, and make it easy to read
 };
 
 export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
-  return `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${formData.source}&arrival_id=${formData.destination}&outbound_date=${formData.startDate}&return_date=${formData.endDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`;
+  // Convert source and destination to uppercase as the API expects
+  const source = formData.source.toUpperCase();
+  const destination = formData.destination.toUpperCase();
+  
+  return `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${source}&arrival_id=${destination}&outbound_date=${formData.startDate}&return_date=${formData.endDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`;
 };
