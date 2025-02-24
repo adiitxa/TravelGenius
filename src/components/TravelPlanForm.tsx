@@ -35,7 +35,10 @@ const TravelPlanForm = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
         },
+        mode: 'cors',
       });
 
       if (!response.ok) {
