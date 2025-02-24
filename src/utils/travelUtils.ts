@@ -1,8 +1,7 @@
-
 import { TravelPlanFormData } from "@/types/travel";
 
-export const API_KEY = 'AIzaSyDG1Ab4bOk2CdxHMCwWTyyLJudtqwYMXfA';
-export const SERP_API_KEY = '2ccc800f765f678fb19986dd95aa63c8de58f264a25707a79b9f4e54b96096bb';
+export const API_KEY = import.meta.env.VITE_GEM_API;
+export const SERP_API_KEY = import.meta.env.VITE_SERP_API;
 
 export const generatePrompt = (data: TravelPlanFormData) => {
   return `Create a detailed travel plan for a trip. Format your response using the following structure and add relevant emojis (sparingly):
