@@ -5,7 +5,6 @@ import { TravelPlanFormData, FlightDetails } from "@/types/travel";
 import { API_KEY, constructFlightSearchUrl, generatePrompt } from "@/utils/travelUtils";
 import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
-import { mockFlightData } from "@/mocks/flightData";
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -29,9 +28,19 @@ const TravelPlanForm = () => {
         throw new Error('Please fill in all flight search fields');
       }
 
-      // For now, we'll use mock data instead of making an API call
-      const data = mockFlightData;
-      console.log('Mock Flight Data:', data);
+      const url = constructFlightSearchUrl(formData);
+      console.log('Fetching flights from:', url);
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('SerpAPI Response:', data);
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
       if (!data.best_flights || data.best_flights.length === 0) {
         throw new Error('No flights found for the specified route and dates');
