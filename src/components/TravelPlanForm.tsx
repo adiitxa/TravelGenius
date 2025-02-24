@@ -1,48 +1,10 @@
+
 import { useState } from "react";
-import { Calendar, MapPin, Users, CreditCard, Plane, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { mockFlightData } from "../mocks/flightData";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-
-interface TravelPlanFormData {
-  source: string;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  budget: string;
-  travelers: string;
-  interests: string;
-  includeFlights: boolean;
-}
-
-interface FlightDetails {
-  airline: string;
-  airline_logo: string;
-  flight_number: string;
-  departure: {
-    airport: string;
-    time: string;
-  };
-  arrival: {
-    airport: string;
-    time: string;
-  };
-  duration: number;
-  price: number;
-  travel_class: string;
-  extensions: string[];
-}
-
-const API_KEY = 'AIzaSyDG1Ab4bOk2CdxHMCwWTyyLJudtqwYMXfA';
-const SERP_API_KEY = '2ccc800f765f678fb19986dd95aa63c8de58f264a25707a79b9f4e54b96096bb';
+import { TravelPlanFormData, FlightDetails } from "@/types/travel";
+import { API_KEY, SERP_API_KEY, generatePrompt } from "@/utils/travelUtils";
+import { FlightDetailsTable } from "./FlightDetailsTable";
+import { TravelFormInputs } from "./TravelFormInputs";
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -71,7 +33,7 @@ const TravelPlanForm = () => {
       }
 
       const data = await response.json();
-      console.log('SerpAPI Response:', data); // For debugging
+      console.log('SerpAPI Response:', data);
 
       if (data.error) {
         throw new Error(data.error);
@@ -113,36 +75,6 @@ const TravelPlanForm = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const generatePrompt = (data: TravelPlanFormData) => {
-    return `Create a detailed travel plan for a trip. Format your response using the following structure and add relevant emojis (sparingly):
-
-# 🌟 Travel Plan Overview
-
-## 📍 Route
-- From: ${data.source}
-- To: ${data.destination}
-- Dates: ${data.startDate} to ${data.endDate}
-
-## 💰 Budget Details
-${data.budget}
-
-## 👥 Group Size
-${data.travelers} traveler(s)
-
-## ✨ Interests
-${data.interests}
-
-Please provide a detailed itinerary including:
-
-1. 🏨 Recommended Accommodations
-2. 🚗 Transportation Options
-3. 📅 Day-by-Day Activities
-4. 🍽️ Notable Restaurant Recommendations
-5. 💡 Travel Tips & Cultural Insights
-
-Format the response with clear sections, bullet points, and make it easy to read.`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -210,133 +142,11 @@ Format the response with clear sections, bullet points, and make it easy to read
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">Source Location</label>
-              <div className="relative group">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
-                <input
-                  type="text"
-                  name="source"
-                  value={formData.source}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  placeholder="Where are you starting from?"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">Destination</label>
-              <div className="relative group">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
-                <input
-                  type="text"
-                  name="destination"
-                  value={formData.destination}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  placeholder="Where do you want to go?"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">Start Date</label>
-              <div className="relative group">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
-                <input
-                  type="date"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  required
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">End Date</label>
-              <div className="relative group">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
-                <input
-                  type="date"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  required
-                  min={formData.startDate || new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">Budget</label>
-              <div className="relative group">
-                <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
-                <input
-                  type="text"
-                  name="budget"
-                  value={formData.budget}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  placeholder="What's your budget?"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-navy/80">Number of Travelers</label>
-              <div className="relative group">
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-desert" size={20} />
-                <input
-                  type="number"
-                  name="travelers"
-                  value={formData.travelers}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                  placeholder="How many people?"
-                  required
-                  min="1"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3 md:col-span-2">
-              <label className="text-sm font-semibold text-navy/80">Interests & Preferences</label>
-              <textarea
-                name="interests"
-                value={formData.interests}
-                onChange={handleInputChange}
-                className="w-full p-4 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-desert focus:ring-2 focus:ring-desert/20 transition-all"
-                placeholder="Tell us about your interests (e.g., adventure, culture, food, relaxation)"
-                required
-                rows={4}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="includeFlights"
-              checked={formData.includeFlights}
-              onCheckedChange={(checked) => 
-                setFormData(prev => ({ ...prev, includeFlights: checked as boolean }))
-              }
-            />
-            <label
-              htmlFor="includeFlights"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Include flight information in my travel plan
-            </label>
-          </div>
+          <TravelFormInputs 
+            formData={formData}
+            onChange={handleInputChange}
+            onCheckboxChange={(checked) => setFormData(prev => ({ ...prev, includeFlights: checked }))}
+          />
 
           <button
             type="submit"
@@ -357,74 +167,7 @@ Format the response with clear sections, bullet points, and make it easy to read
           </button>
         </form>
 
-        {flightDetails && (
-          <div className="mt-10">
-            <h3 className="text-2xl font-bold text-navy mb-4">✈️ Available Flights</h3>
-            <div className="overflow-hidden rounded-xl border border-gray-200">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Airline</TableHead>
-                    <TableHead>Flight</TableHead>
-                    <TableHead>Departure</TableHead>
-                    <TableHead>Arrival</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <img src={flightDetails.airline_logo} alt={flightDetails.airline} className="h-6" />
-                        <span>{flightDetails.airline}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{flightDetails.flight_number}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{flightDetails.departure.time.split(' ')[1]}</p>
-                        <p className="text-sm text-gray-500">{flightDetails.departure.airport}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{flightDetails.arrival.time.split(' ')[1]}</p>
-                        <p className="text-sm text-gray-500">{flightDetails.arrival.airport}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{Math.floor(flightDetails.duration / 60)}h {flightDetails.duration % 60}m</TableCell>
-                    <TableCell>${flightDetails.price}</TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => window.open(mockFlightData.best_flights[0].booking_token, '_blank')}
-                        className="inline-flex items-center space-x-1 text-desert hover:text-navy transition-colors"
-                      >
-                        <span>Book</span>
-                        <Plane size={16} />
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-
-            {flightDetails.extensions.length > 0 && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm font-medium text-gray-600 mb-2">Additional Information</p>
-                <ul className="space-y-1">
-                  {flightDetails.extensions.map((ext, index) => (
-                    <li key={index} className="text-sm flex items-center space-x-2">
-                      <AlertCircle size={14} className="text-desert" />
-                      <span>{ext}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
+        {flightDetails && <FlightDetailsTable flightDetails={flightDetails} />}
 
         {result && (
           <div className="mt-10 p-8 bg-gradient-to-br from-sand/40 to-desert/20 rounded-2xl backdrop-blur-sm animate-fadeIn">
