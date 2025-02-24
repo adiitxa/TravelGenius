@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send } from "lucide-react";
+import { API_KEY } from "@/utils/travelUtils";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -33,7 +34,7 @@ export const TravelChat = ({ initialContext }: TravelChatProps) => {
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${import.meta.env.VITE_GOOGLE_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
         {
           method: 'POST',
           headers: {
