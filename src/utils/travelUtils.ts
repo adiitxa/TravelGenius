@@ -39,5 +39,5 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
   const source = formData.source.toUpperCase();
   const destination = formData.destination.toUpperCase();
   
-  return `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${source}&arrival_id=${destination}&outbound_date=${formData.startDate}&return_date=${formData.endDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`;
+  return `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${source}&arrival_id=${destination}&outbound_date=${formData.startDate}&currency=USD&hl=en&api_key=${SERP_API_KEY}`;
 };
