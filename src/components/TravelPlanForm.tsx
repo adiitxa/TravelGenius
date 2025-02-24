@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TravelPlanFormData, FlightDetails } from "@/types/travel";
@@ -6,6 +5,15 @@ import { API_KEY, constructFlightSearchUrl, generatePrompt } from "@/utils/trave
 import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
 import { TravelChat } from "./TravelChat";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -201,9 +209,42 @@ const TravelPlanForm = () => {
         {result && (
           <>
             <div className="mt-10 p-8 bg-gradient-to-br from-sand/40 to-desert/20 rounded-2xl backdrop-blur-sm animate-fadeIn">
-              <h3 className="text-2xl font-bold text-navy mb-4">Your Travel Plan</h3>
-              <div className="prose prose-sand">
-                <pre className="whitespace-pre-wrap text-navy/70 leading-relaxed">{result}</pre>
+              <h3 className="text-2xl font-bold text-navy mb-6 flex items-center gap-2">
+                <span className="text-3xl">✈️</span> Your Travel Plan
+              </h3>
+              
+              <div className="space-y-6">
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6">
+                  <h4 className="text-lg font-semibold text-navy mb-3">Trip Overview</h4>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">From</TableCell>
+                        <TableCell>{formData.source}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">To</TableCell>
+                        <TableCell>{formData.destination}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Duration</TableCell>
+                        <TableCell>{`${formData.startDate.split('T')[0]} - ${formData.endDate.split('T')[0]}`}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Travelers</TableCell>
+                        <TableCell>{formData.travelers}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <Separator className="bg-navy/10" />
+
+                <div className="prose prose-sand max-w-none">
+                  <div className="whitespace-pre-wrap text-navy/70 leading-relaxed bg-white/60 backdrop-blur-sm rounded-xl p-6">
+                    {result}
+                  </div>
+                </div>
               </div>
             </div>
             
