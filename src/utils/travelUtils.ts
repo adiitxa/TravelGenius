@@ -39,15 +39,16 @@ export const constructFlightSearchUrl = (formData: TravelPlanFormData) => {
   const source = formData.source.toUpperCase();
   const destination = formData.destination.toUpperCase();
   
-  // Ensure the date is properly formatted (YYYY-MM-DD)
-  const formattedDate = formData.startDate.split('T')[0];
+  // Ensure the dates are properly formatted (YYYY-MM-DD)
+  const outboundDate = formData.startDate.split('T')[0];
+  const returnDate = formData.endDate.split('T')[0];
   
   const serpApiUrl = `https://serpapi.com/search.json?` + new URLSearchParams({
     engine: 'google_flights',
-    type: '2',
     departure_id: source,
     arrival_id: destination,
-    outbound_date: formattedDate,
+    outbound_date: outboundDate,
+    return_date: returnDate,
     currency: 'USD',
     hl: 'en',
     api_key: SERP_API_KEY,

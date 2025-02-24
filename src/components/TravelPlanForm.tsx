@@ -24,8 +24,8 @@ const TravelPlanForm = () => {
 
   const fetchFlightDetails = async () => {
     try {
-      if (!formData.source || !formData.destination || !formData.startDate) {
-        throw new Error('Please fill in all flight search fields');
+      if (!formData.source || !formData.destination || !formData.startDate || !formData.endDate) {
+        throw new Error('Please fill in all flight search fields, including return date');
       }
 
       const url = constructFlightSearchUrl(formData);
