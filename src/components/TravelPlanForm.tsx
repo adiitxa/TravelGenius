@@ -5,6 +5,7 @@ import { TravelPlanFormData, FlightDetails } from "@/types/travel";
 import { API_KEY, constructFlightSearchUrl, generatePrompt } from "@/utils/travelUtils";
 import { FlightDetailsTable } from "./FlightDetailsTable";
 import { TravelFormInputs } from "./TravelFormInputs";
+import { mockFlightData } from "@/mocks/flightData";
 
 const TravelPlanForm = () => {
   const { toast } = useToast();
@@ -28,45 +29,33 @@ const TravelPlanForm = () => {
         throw new Error('Please fill in all flight search fields');
       }
 
-      const url = constructFlightSearchUrl(formData);
-      console.log('Fetching flights from:', url);
+      // For now, we'll use mock data instead of making an API call
+      const data = mockFlightData;
+      console.log('Mock Flight Data:', data);
 
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      
-      console.log('SerpAPI Response:', data);
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Check if we have flights data in the correct format
-      if (!data.flights || !Array.isArray(data.flights) || data.flights.length === 0) {
+      if (!data.best_flights || data.best_flights.length === 0) {
         throw new Error('No flights found for the specified route and dates');
       }
 
-      // Take the first flight from the response
-      const flight = data.flights[0];
+      const bestFlight = data.best_flights[0];
+      const flight = bestFlight.flights[0];
 
       const flightDetail: FlightDetails = {
-        airline: flight.airline || "Unknown Airline",
-        airline_logo: flight.airline_logo || "https://www.gstatic.com/flights/airline_logos/70px/generic.png",
-        flight_number: flight.flight_number || "N/A",
+        airline: flight.airline,
+        airline_logo: flight.airline_logo,
+        flight_number: flight.flight_number,
         departure: {
-          airport: flight.departure_airport?.name || formData.source,
-          time: flight.departure_time || "N/A",
+          airport: flight.departure_airport.name,
+          time: flight.departure_airport.time,
         },
         arrival: {
-          airport: flight.arrival_airport?.name || formData.destination,
-          time: flight.arrival_time || "N/A",
+          airport: flight.arrival_airport.name,
+          time: flight.arrival_airport.time,
         },
-        duration: flight.duration || 0,
-        price: flight.price || 0,
-        travel_class: flight.cabin_class || "Economy",
-        extensions: flight.features || [],
+        duration: flight.duration,
+        price: bestFlight.price,
+        travel_class: flight.travel_class,
+        extensions: flight.extensions,
       };
 
       setFlightDetails(flightDetail);
@@ -80,11 +69,7 @@ const TravelPlanForm = () => {
       
       let errorMessage = "Failed to fetch flight information. Please try again.";
       if (error instanceof Error) {
-        if (error.message.includes("Failed to fetch")) {
-          errorMessage = "Unable to connect to flight service. Please check your internet connection and try again.";
-        } else {
-          errorMessage = error.message;
-        }
+        errorMessage = error.message;
       }
       
       toast({

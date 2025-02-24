@@ -5,42 +5,43 @@ export const mockFlightData = {
       "flights": [
         {
           "departure_airport": {
-            "name": "Indira Gandhi International Airport",
-            "id": "DEL",
-            "time": "2025-02-24 23:35"
+            "name": "Beijing Capital International Airport",
+            "id": "PEK",
+            "time": "2025-02-24 19:20"
           },
           "arrival_airport": {
-            "name": "Noi Bai International Airport",
-            "id": "HAN",
-            "time": "2025-02-25 05:10"
+            "name": "San Francisco International Airport",
+            "id": "SFO",
+            "time": "2025-02-24 14:50"
           },
-          "duration": 245,
-          "airplane": "Airbus A350",
-          "airline": "Vietnam Airlines",
-          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/VN.png",
+          "duration": 690,
+          "airplane": "Boeing 777",
+          "airline": "United",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
           "travel_class": "Economy",
-          "flight_number": "VN 970",
-          "legroom": "32 in",
+          "flight_number": "UA 889",
+          "legroom": "31 in",
           "extensions": [
-            "Above average legroom (32 in)",
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
             "In-seat power & USB outlets",
             "On-demand video",
-            "Carbon emissions estimate: 230 kg"
+            "Carbon emissions estimate: 637 kg"
           ],
-          "overnight": true,
-          "often_delayed_by_over_30_min": true
+          "overnight": true
         }
       ],
-      "total_duration": 245,
+      "layovers": [],
+      "total_duration": 690,
       "carbon_emissions": {
-        "this_flight": 230000,
-        "typical_for_this_route": 223000,
-        "difference_percent": 3
+        "this_flight": 637000,
+        "typical_for_this_route": 645000,
+        "difference_percent": -1
       },
-      "price": 428,
+      "price": 995,
       "type": "One way",
-      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/VN.png",
-      "booking_token": "WyJDalJJT1UxMVF6bFdVRkZDTVRSQlNVazRNR2RDUnkwdExTMHRMUzB0ZG5SaVpIRXhNVUZCUVVGQlIyVTNYMk56VERKSmQwbEJFZ1ZXVGprM01Cb0xDUDdOQWhBQ0dnTlZVMFE0SEhEK3pRST0iLFtbIkRFTCIsIjIwMjUtMDItMjQiLCJIQU4iLG51bGwsIlZOIiwiOTcwIl1dXQ=="
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+      "booking_token": "WyJDalJJYjNvNFpHRmxkak5FTlhOQlNVTlpPV2RDUnkwdExTMHRMUzB0TFhCcWNIa3hOa0ZCUVVGQlIyVTRRMUpaU0RKVVIwVkJFZ3hWUVRnNE9YeFZRVEl3TnpjYUN3aWlpUVlRQWhvRFZWTkVPQnh3b29rRyIsW1siUEVLIiwiMjAyNS0wMi0yNCIsIlNGTyIsbnVsbCwiVUEiLCI4ODkiXSxbIlNGTyIsIjIwMjUtMDItMjQiLCJBVVMiLG51bGwsIlVBIiwiMjA3NyJdXV0="
     }
   ]
 };
